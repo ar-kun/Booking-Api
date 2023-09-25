@@ -1,13 +1,12 @@
-﻿namespace Booking_Api.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using BookingApp.Models;
+
+namespace Booking_Api.Models
 {
-    public class University
+    [Table(name: "tb_m_universities")]
+    public class University : BaseEntity
     {
-        public Guid Guid { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
+        [Column("code", TypeName = "nvarchar(50)")] public string Code { get; set; }
+        [Column("name", TypeName = "nvarchar(100)")] public string Name { get; set; }
     }
 }

@@ -1,12 +1,12 @@
-﻿namespace Booking_Api.Models
-{
-    public class AccountRoles
-    {
-        public Guid Guid { get; set; }
-        public Guid AccountGuid { get; set; }
-        public Guid RoleGuid { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using BookingApp.Models;
 
+namespace Booking_Api.Models
+{
+    [Table(name: "tb_m_account_roles")]
+    public class AccountRoles : BaseEntity
+    {
+        [Column("account_guid")] public Guid AccountGuid { get; set; }
+        [Column("role_guid")] public Guid RoleGuid { get; set; }
     }
 }

@@ -1,14 +1,15 @@
-﻿namespace Booking_Api.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using BookingApp.Models;
+
+namespace Booking_Api.Models
 {
-    public class Accounts
+    [Table(name: "tb_m_accounts")]
+    public class Accounts : BaseEntity
     {
-        public Guid Guid { get; set; }
-        public string Password { get; set; }
-        public bool IsDeleted { get; set; }
-        public int Otp {  get; set; }
-        public bool IsUsed { get; set; }
-        public DateTime ExpiredTime { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set;}
+        [Column("password", TypeName = "nvarchar(225)")] public string Password { get; set; }
+        [Column("is_deleted")] public bool IsDeleted { get; set; }
+        [Column("otp")] public int Otp { get; set; }
+        [Column("is_used")] public bool IsUsed { get; set; }
+        [Column("exoired_time")] public DateTime ExpiredTime { get; set; }
     }
 }
