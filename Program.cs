@@ -1,4 +1,6 @@
+using Booking_Api.Contracts;
 using Booking_Api.Data;
+using Booking_Api.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,8 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<BookingManagementDbContext>(option => option.UseSqlServer(connectionString));
 
-// Add services to the container.
 
+// add repository to the container
+builder.Services.AddScoped<IUniversityRepository, UniversityRepository>();
+
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
