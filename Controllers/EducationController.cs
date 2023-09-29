@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Booking_Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class EducationController : ControllerBase
     {
+
         private readonly IEducationRepository _educationRepository;
 
         public EducationController(IEducationRepository educationRepository)

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Booking_Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class EmployeController : ControllerBase
     {
         private readonly IEmployeRepository _employeRepository;
