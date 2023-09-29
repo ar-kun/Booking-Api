@@ -17,6 +17,7 @@ builder.Services.AddScoped<IEmployeRepository, EmployeRepository>();
 builder.Services.AddScoped<IEducationRepository, EducationRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 // Add services to the container.
 builder.Services.AddControllers();
