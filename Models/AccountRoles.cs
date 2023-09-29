@@ -8,5 +8,9 @@ namespace Booking_Api.Models
     {
         [Column("account_guid")] public Guid AccountGuid { get; set; }
         [Column("role_guid")] public Guid RoleGuid { get; set; }
+
+        // Relationship Cardinality 
+        public Roles? Roles { get; set; }
+        public Accounts? Accounts { get; set; }
     }
 }

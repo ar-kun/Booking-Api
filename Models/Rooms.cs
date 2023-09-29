@@ -10,5 +10,8 @@ namespace Booking_Api.Models
         [Column("floor")] public int Floor { get; set; }
         [Column("capacity")] public int Capacity { get; set; }
 
+        // Relationship Cardinality (One to Many)
+        public ICollection<Bookings>? Bookings { get; set; }
+
     }
 }

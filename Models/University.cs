@@ -8,5 +8,8 @@ namespace Booking_Api.Models
     {
         [Column("code", TypeName = "nvarchar(50)")] public string Code { get; set; }
         [Column("name", TypeName = "nvarchar(100)")] public string Name { get; set; }
+
+        // Relationship Cardinality
+        public ICollection<Educations>? Educations { get; set; }
     }
 }

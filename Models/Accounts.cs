@@ -11,5 +11,9 @@ namespace Booking_Api.Models
         [Column("otp")] public int Otp { get; set; }
         [Column("is_used")] public bool IsUsed { get; set; }
         [Column("exoired_time")] public DateTime ExpiredTime { get; set; }
+
+        // Relationship Cardinality (One to Many)
+        public ICollection<AccountRoles>? AccountRoles { get; set; }
+        public Employees? Employees { get; set; }
     }
 }

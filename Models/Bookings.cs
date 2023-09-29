@@ -13,5 +13,9 @@ namespace Booking_Api.Models
         [Column("room_guid")] public Guid RoomGuid { get; set; }
         [Column("employee_guid")] public Guid EmployeeGuid { get; set; }
 
+        // Relationship Cardinality (Many to One)
+        public Rooms? Rooms { get; set; }
+        public Employees? Employees { get; set; }
+
     }
 }

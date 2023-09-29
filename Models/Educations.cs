@@ -11,5 +11,9 @@ namespace Booking_Api.Models
         [Column("gpa")] public float Gpa { get; set; }
         [Column("university_guid")] public Guid UniversityGuid { get; set; }
 
+        // Relationship Cardinality
+        public University? University { get; set; }
+        public Employees? Employees { get; set; }
+
     }
 }

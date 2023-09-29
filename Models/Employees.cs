@@ -17,6 +17,11 @@ namespace Booking_Api.Models
         [Column("email", TypeName = "nvarchar(100)")] public string Email { get; set; }
         [Column("phone_number", TypeName = "nvarchar(100)")] public string PhoneNumber { get; set; }
 
+        // Relationship Cardinality (One to Many)
+        public ICollection<Bookings>? Bookings { get; set; }
+        public Educations? Educations { get; set; }
+        public Accounts? Accounts { get; set; }
+
     }
 
 }
