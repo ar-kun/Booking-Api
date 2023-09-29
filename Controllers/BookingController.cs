@@ -68,8 +68,8 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var result = new Bookings() { Guid = guid };
-            var deletedBooking = _bookingRepository.Delete(result);
+            var booking = new Bookings() { Guid = guid };
+            var deletedBooking = _bookingRepository.Delete(booking);
             if (!deletedBooking)
             {
                 return BadRequest("Not Deleted Booking. Try Again!");

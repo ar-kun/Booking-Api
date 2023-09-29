@@ -68,8 +68,8 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var result = new Accounts() { Guid = guid };
-            var deletedAccount = _accountRepository.Delete(result);
+            var account = new Accounts() { Guid = guid };
+            var deletedAccount = _accountRepository.Delete(account);
             if (!deletedAccount)
             {
                 return BadRequest("Not Deleted Account. Try Again!");
