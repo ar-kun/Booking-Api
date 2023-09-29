@@ -65,10 +65,11 @@ namespace Booking_Api.Controllers
         }
 
         // Delete: api/Employe
-        [HttpDelete]
-        public IActionResult Delete(Employees employe)
+        [HttpDelete("{guid}")]
+        public IActionResult Delete(Guid guid)
         {
-            var deletedEmploye = _employeRepository.Delete(employe);
+            var result = new Employees() { Guid = guid };
+            var deletedEmploye = _employeRepository.Delete(result);
             if (!deletedEmploye)
             {
                 return BadRequest("Not Deleted Employe. Try Again!");

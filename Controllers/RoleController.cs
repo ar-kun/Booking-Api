@@ -65,10 +65,11 @@ namespace Booking_Api.Controllers
         }
 
         // Delete: api/Role
-        [HttpDelete]
-        public IActionResult Delete(Roles role)
+        [HttpDelete("{guid}")]
+        public IActionResult Delete(Guid guid)
         {
-            var deletedRole = _roleRepository.Delete(role);
+            var result = new Roles() { Guid = guid };
+            var deletedRole = _roleRepository.Delete(result);
             if (!deletedRole)
             {
                 return BadRequest("Not Deleted Role. Try Again!");

@@ -65,10 +65,11 @@ namespace Booking_Api.Controllers
         }
 
         // DELETE: api/Room
-        [HttpDelete]
-        public IActionResult Delete(Rooms room)
+        [HttpDelete("{guid}")]
+        public IActionResult Delete(Guid guid)
         {
-            var deletedRoom = _roomRepository.Delete(room);
+            var result = new Rooms() { Guid = guid };
+            var deletedRoom = _roomRepository.Delete(result);
             if (!deletedRoom)
             {
                 return BadRequest("Not Deleted Room. Try Again!");

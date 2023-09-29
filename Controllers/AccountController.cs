@@ -1,4 +1,5 @@
 ﻿using Booking_Api.Contracts;
+using Booking_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Booking_Api.Controllers
@@ -41,7 +42,7 @@ namespace Booking_Api.Controllers
 
         // Post: api/Account
         [HttpPost]
-        public IActionResult Create(Models.Accounts account)
+        public IActionResult Create(Accounts account)
         {
             var createdAccount = _accountRepository.Create(account);
             if (createdAccount is null)
@@ -53,7 +54,7 @@ namespace Booking_Api.Controllers
 
         // Put: api/Account
         [HttpPut]
-        public IActionResult Update(Models.Accounts account)
+        public IActionResult Update(Accounts account)
         {
             var updatedAccount = _accountRepository.Update(account);
             if (!updatedAccount)
@@ -64,10 +65,11 @@ namespace Booking_Api.Controllers
         }
 
         // Delete: api/Account
-        [HttpDelete]
-        public IActionResult Delete(Models.Accounts account)
+        [HttpDelete("{guid}")]
+        public IActionResult Delete(Guid guid)
         {
-            var deletedAccount = _accountRepository.Delete(account);
+            var result = new Accounts() { Guid = guid };
+            var deletedAccount = _accountRepository.Delete(result);
             if (!deletedAccount)
             {
                 return BadRequest("Not Deleted Account. Try Again!");

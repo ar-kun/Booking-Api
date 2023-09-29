@@ -66,10 +66,11 @@ namespace Booking_Api.Controllers
         }
 
         // Delete: api/Education
-        [HttpDelete]
-        public IActionResult Delete(Educations education)
+        [HttpDelete("{guid}")]
+        public IActionResult Delete(Guid guid)
         {
-            var deletedEducation = _educationRepository.Delete(education);
+            var result = new Educations() { Guid = guid };
+            var deletedEducation = _educationRepository.Delete(result);
             if (!deletedEducation)
             {
                 return BadRequest("Not Deleted Education. Try Again!");
