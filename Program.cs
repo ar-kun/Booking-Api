@@ -40,4 +40,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Seed Data
+BookingManagementDbInitializer.Seed(app);
+
 app.Run();
