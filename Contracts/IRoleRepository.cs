@@ -2,12 +2,8 @@
 
 namespace Booking_Api.Contracts
 {
-    public interface IRoleRepository
+    public interface IRoleRepository : IGeneralRepository<Role>
     {
-        IEnumerable<Roles> GetAll();
-        Roles? GetById(Guid guid);
-        Roles? Create(Roles roles);
-        bool Update(Roles roles);
-        bool Delete(Roles roles);
+       
     }
 }

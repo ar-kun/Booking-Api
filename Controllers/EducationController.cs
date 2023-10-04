@@ -43,7 +43,7 @@ namespace Booking_Api.Controllers
 
         // Post: api/Education
         [HttpPost]
-        public IActionResult Create(Educations education)
+        public IActionResult Create(Education education)
         {
             var createdEducation = _educationRepository.Create(education);
             if (createdEducation is null)
@@ -55,7 +55,7 @@ namespace Booking_Api.Controllers
 
         // Put: api/Education
         [HttpPut]
-        public IActionResult Update(Educations education)
+        public IActionResult Update(Education education)
         {
             var updatedEducation = _educationRepository.Update(education);
             if (!updatedEducation)
@@ -69,7 +69,7 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var education = new Educations() { Guid = guid };
+            var education = new Education() { Guid = guid };
             var deletedEducation = _educationRepository.Delete(education);
             if (!deletedEducation)
             {

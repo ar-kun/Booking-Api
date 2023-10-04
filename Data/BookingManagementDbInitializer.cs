@@ -43,22 +43,22 @@ namespace Booking_Api.Data
                 // Room
                 if (!context.Rooms.Any())
                 {
-                    context.Rooms.AddRange(new List<Rooms>(){
-                        new Rooms{
+                    context.Rooms.AddRange(new List<Room>(){
+                        new Room{
                             Name = "Room 1",
                             Floor = 1,
                             Capacity = 10,
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
                         },
-                        new Rooms{
+                        new Room{
                             Name = "Room 2",
                             Floor = 2,
                             Capacity = 10,
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
                         },
-                        new Rooms{
+                        new Room{
                             Name = "Room 3",
                             Floor = 3,
                             Capacity = 12,
@@ -71,13 +71,13 @@ namespace Booking_Api.Data
                 // Role
                 if (!context.Roles.Any())
                 {
-                    context.Roles.AddRange(new List<Roles>(){
-                        new Roles{
+                    context.Roles.AddRange(new List<Role>(){
+                        new Role{
                             Name = "Admin",
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
                         },
-                        new Roles{
+                        new Role{
                             Name = "User",
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
@@ -88,9 +88,9 @@ namespace Booking_Api.Data
                 // Employee
                 if (!context.Employees.Any())
                 {
-                    context.Employees.AddRange(new List<Employees>()
+                    context.Employees.AddRange(new List<Employe>()
                     {
-                        new Employees{
+                        new Employe{
                             Nik = "N00011",
                             FirstName = "John",
                             LastName = "Doe",
@@ -102,7 +102,7 @@ namespace Booking_Api.Data
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now,
                         },
-                        new Employees{
+                        new Employe{
                             Nik = "N00012",
                             FirstName = "Jane",
                             LastName = "Doe",
@@ -121,9 +121,9 @@ namespace Booking_Api.Data
                 // Booking
                 if (!context.Bookings.Any())
                 {
-                    context.Bookings.AddRange(new List<Bookings>()
+                    context.Bookings.AddRange(new List<Booking>()
                     {
-                        new Bookings
+                        new Booking
                         {
                             RoomGuid = context.Rooms.FirstOrDefault().Guid,
                             EmployeeGuid = context.Employees.FirstOrDefault().Guid,
@@ -134,7 +134,7 @@ namespace Booking_Api.Data
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now
                         },
-                        new Bookings
+                        new Booking
                         {
                             RoomGuid = context.Rooms.FirstOrDefault().Guid,
                             EmployeeGuid = context.Employees.FirstOrDefault().Guid,
@@ -152,9 +152,9 @@ namespace Booking_Api.Data
                 // Education
                 if (!context.Educations.Any())
                 {
-                    context.Educations.AddRange(new List<Educations>()
+                    context.Educations.AddRange(new List<Education>()
                     {
-                        new Educations
+                        new Education
                         {
                             Guid = context.Employees.FirstOrDefault().Guid,
                             UniversityGuid = context.Universities.FirstOrDefault().Guid,
@@ -170,9 +170,9 @@ namespace Booking_Api.Data
                 // Account
                 if (!context.Accounts.Any())
                 {
-                    context.Accounts.AddRange(new List<Accounts>()
+                    context.Accounts.AddRange(new List<Account>()
                     {
-                        new Accounts
+                        new Account
                         {
                             Guid = Guid.NewGuid(),
                             Password = "admin",
@@ -183,7 +183,7 @@ namespace Booking_Api.Data
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now
                         },
-                        new Accounts{
+                        new Account{
                             Guid =  Guid.NewGuid(),
                             Password = "user",
                             IsDeleted = false,
@@ -199,9 +199,9 @@ namespace Booking_Api.Data
                 // AccountRole
                 if (!context.AccountRoles.Any())
                 {
-                    context.AccountRoles.AddRange(new List<AccountRoles>()
+                    context.AccountRoles.AddRange(new List<AccountRole>()
                     {
-                        new AccountRoles
+                        new AccountRole
                         {
 
                             AccountGuid = context.Accounts.FirstOrDefault().Guid,
@@ -209,7 +209,7 @@ namespace Booking_Api.Data
                             CreatedDate = DateTime.Now,
                             ModifiedDate = DateTime.Now
                         },
-                        new AccountRoles{
+                        new AccountRole{
 
                             AccountGuid = context.Accounts.FirstOrDefault().Guid,
                             RoleGuid = context.Roles.FirstOrDefault().Guid,

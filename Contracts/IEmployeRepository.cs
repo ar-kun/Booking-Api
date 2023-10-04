@@ -2,12 +2,8 @@
 
 namespace Booking_Api.Contracts
 {
-    public interface IEmployeRepository
+    public interface IEmployeRepository : IGeneralRepository<Employe>
     {
-        IEnumerable<Employees> GetAll();
-        Employees? GetById(Guid guid);
-        Employees? Create(Employees employe);
-        bool Update(Employees employe);
-        bool Delete(Employees employe);
+       
     }
 }

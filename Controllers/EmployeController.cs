@@ -42,7 +42,7 @@ namespace Booking_Api.Controllers
 
         // Post: api/Employe
         [HttpPost]
-        public IActionResult Create(Employees employe)
+        public IActionResult Create(Employe employe)
         {
             var createdEmploye = _employeRepository.Create(employe);
             if (createdEmploye is null)
@@ -54,7 +54,7 @@ namespace Booking_Api.Controllers
 
         // Put: api/Employe
         [HttpPut]
-        public IActionResult Update(Employees employe)
+        public IActionResult Update(Employe employe)
         {
             var updatedEmploye = _employeRepository.Update(employe);
             if (!updatedEmploye)
@@ -68,7 +68,7 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var employe = new Employees() { Guid = guid };
+            var employe = new Employe() { Guid = guid };
             var deletedEmploye = _employeRepository.Delete(employe);
             if (!deletedEmploye)
             {

@@ -4,7 +4,7 @@ using BookingApp.Models;
 namespace Booking_Api.Models
 {
     [Table(name: "tb_tr_bookings")]
-    public class Bookings : BaseEntity
+    public class Booking : BaseEntity
     {
         [Column("start_date")] public DateTime StartDate { get; set; }
         [Column("end_date")] public DateTime EndDate { get; set; }
@@ -14,8 +14,8 @@ namespace Booking_Api.Models
         [Column("employee_guid")] public Guid EmployeeGuid { get; set; }
 
         // Relationship Cardinality (Many to One)
-        public Rooms? Rooms { get; set; }
-        public Employees? Employees { get; set; }
+        public Room? Rooms { get; set; }
+        public Employe? Employees { get; set; }
 
     }
 }

@@ -6,7 +6,7 @@ using BookingApp.Models;
 namespace Booking_Api.Models
 {
     [Table(name: "tb_m_employees")]
-    public class Employees : BaseEntity
+    public class Employe : BaseEntity
     {
         [Column("nik", TypeName = "nchar(6)")] public string Nik { get; set; }
         [Column("first_name", TypeName = "nvarchar(100)")] public string FirstName { get; set; }
@@ -18,9 +18,9 @@ namespace Booking_Api.Models
         [Column("phone_number", TypeName = "nvarchar(100)")] public string PhoneNumber { get; set; }
 
         // Relationship Cardinality (One to Many)
-        public ICollection<Bookings>? Bookings { get; set; }
-        public Educations? Educations { get; set; }
-        public Accounts? Accounts { get; set; }
+        public ICollection<Booking>? Bookings { get; set; }
+        public Education? Educations { get; set; }
+        public Account? Accounts { get; set; }
 
     }
 

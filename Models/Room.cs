@@ -4,14 +4,14 @@ using BookingApp.Models;
 namespace Booking_Api.Models
 {
     [Table(name: "tb_m_rooms")]
-    public class Rooms : BaseEntity
+    public class Room : BaseEntity
     {
         [Column("name", TypeName = "nvarchar(100)")] public string Name { get; set; }
         [Column("floor")] public int Floor { get; set; }
         [Column("capacity")] public int Capacity { get; set; }
 
         // Relationship Cardinality (One to Many)
-        public ICollection<Bookings>? Bookings { get; set; }
+        public ICollection<Booking>? Bookings { get; set; }
 
     }
 }

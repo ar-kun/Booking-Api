@@ -42,7 +42,7 @@ namespace Booking_Api.Controllers
 
         // Post: api/Booking
         [HttpPost]
-        public IActionResult Create(Bookings booking)
+        public IActionResult Create(Booking booking)
         {
             var createdBooking = _bookingRepository.Create(booking);
             if (createdBooking is null)
@@ -54,7 +54,7 @@ namespace Booking_Api.Controllers
 
         // Put: api/Booking
         [HttpPut]
-        public IActionResult Update(Bookings booking)
+        public IActionResult Update(Booking booking)
         {
             var updatedBooking = _bookingRepository.Update(booking);
             if (!updatedBooking)
@@ -68,7 +68,7 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var booking = new Bookings() { Guid = guid };
+            var booking = new Booking() { Guid = guid };
             var deletedBooking = _bookingRepository.Delete(booking);
             if (!deletedBooking)
             {

@@ -2,12 +2,8 @@
 
 namespace Booking_Api.Contracts
 {
-    public interface IRoomRepository
+    public interface IRoomRepository : IGeneralRepository<Room>
     {
-        IEnumerable<Rooms> GetAll();
-        Rooms? GetById(Guid guid);
-        Rooms? Create(Rooms rooms);
-        bool Update(Rooms rooms);
-        bool Delete(Rooms rooms);
+       
     }
 }

@@ -2,12 +2,8 @@
 
 namespace Booking_Api.Contracts
 {
-    public interface IEducationRepository
+    public interface IEducationRepository : IGeneralRepository<Education>
     {
-        IEnumerable<Educations> GetAll();
-        Educations? GetById(Guid guid);
-        Educations? Create(Educations education);
-        bool Update(Educations education);
-        bool Delete(Educations education);
+        
     }
 }

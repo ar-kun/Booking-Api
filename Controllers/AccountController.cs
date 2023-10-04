@@ -42,7 +42,7 @@ namespace Booking_Api.Controllers
 
         // Post: api/Account
         [HttpPost]
-        public IActionResult Create(Accounts account)
+        public IActionResult Create(Account account)
         {
             var createdAccount = _accountRepository.Create(account);
             if (createdAccount is null)
@@ -54,7 +54,7 @@ namespace Booking_Api.Controllers
 
         // Put: api/Account
         [HttpPut]
-        public IActionResult Update(Accounts account)
+        public IActionResult Update(Account account)
         {
             var updatedAccount = _accountRepository.Update(account);
             if (!updatedAccount)
@@ -68,7 +68,7 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var account = new Accounts() { Guid = guid };
+            var account = new Account() { Guid = guid };
             var deletedAccount = _accountRepository.Delete(account);
             if (!deletedAccount)
             {

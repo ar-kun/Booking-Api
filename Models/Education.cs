@@ -4,7 +4,7 @@ using BookingApp.Models;
 namespace Booking_Api.Models
 {
     [Table(name: "tb_m_educations")]
-    public class Educations : BaseEntity
+    public class Education : BaseEntity
     {
         [Column("major", TypeName = "nvarchar(100)")] public string Major { get; set; }
         [Column("degree", TypeName = "nvarchar(100)")] public string Degree { get; set; }
@@ -13,7 +13,7 @@ namespace Booking_Api.Models
 
         // Relationship Cardinality
         public University? University { get; set; }
-        public Employees? Employees { get; set; }
+        public Employe? Employees { get; set; }
 
     }
 }
