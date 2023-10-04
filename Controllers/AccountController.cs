@@ -3,6 +3,7 @@ using Booking_Api.DTOs.Accounts;
 using Booking_Api.Models;
 using Booking_Api.Utilities.Handler;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Booking_Api.Controllers
 {
@@ -24,12 +25,17 @@ namespace Booking_Api.Controllers
             var accounts = _accountRepository.GetAll();
             if (!accounts.Any())
             {
-                return NotFound("Data Not Found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
 
             var data = accounts.Select(x => (AccountDto)x);
 
-            return Ok(data);
+            return Ok(new ResponseOKHandler<IEnumerable<AccountDto>>(data));
         }
 
         // Get: api/Account/guid
@@ -39,61 +45,106 @@ namespace Booking_Api.Controllers
             var account = _accountRepository.GetById(guid);
             if (account is null)
             {
-                return NotFound("Account Not found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
-            return Ok((AccountDto)account);
+            return Ok(new ResponseOKHandler<AccountDto>((AccountDto)account));
         }
 
         // Post: api/Account
         [HttpPost]
         public IActionResult Create(CreateAccountDto createAccountDto)
         {
-            Account toCreate = createAccountDto;
-            toCreate.Password = HashingHandler.HashPassword(createAccountDto.Password);
-
-            var createdAccount = _accountRepository.Create(createAccountDto);
-            if (createdAccount is null)
+            try
             {
-                return BadRequest("Not Created Account. Try Again!");
+                Account toCreate = createAccountDto;
+                toCreate.Password = HashingHandler.HashPassword(createAccountDto.Password);
+
+                var createdAccount = _accountRepository.Create(createAccountDto);
+                
+                return Ok(new ResponseOKHandler<AccountDto>((AccountDto)createdAccount));
             }
-            return Ok((AccountDto)createdAccount);
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         // Put: api/Account
         [HttpPut]
         public IActionResult Update(AccountDto accountDto)
         {
-            var account = _accountRepository.GetById(accountDto.Guid);
-            if (account is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var account = _accountRepository.GetById(accountDto.Guid);
+                if (account is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                Account toUpdate = accountDto;
+                toUpdate.CreatedDate = account.CreatedDate;
+                toUpdate.Password = HashingHandler.HashPassword(accountDto.Password);
+                _accountRepository.Update(account);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been updated successfully"));
             }
-            Account toUpdate = accountDto;
-            toUpdate.CreatedDate = account.CreatedDate;
-            toUpdate.Password = HashingHandler.HashPassword(accountDto.Password);
-            var updatedAccount = _accountRepository.Update(account);
-            if (!updatedAccount)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Not Updated Account. Try Again!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-            return Ok("Data has been updated successfully");
         }
 
         // Delete: api/Account
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var account = _accountRepository.GetById(guid);
-            if (account is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var account = _accountRepository.GetById(guid);
+                if (account is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                _accountRepository.Delete(account);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been Deleted successfully"));
             }
-            var deletedAccount = _accountRepository.Delete(account);
-            if (!deletedAccount)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Not Deleted Account. Try Again!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-            return Ok(deletedAccount);
         }
 
     }

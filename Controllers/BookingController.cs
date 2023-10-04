@@ -1,7 +1,9 @@
 ﻿using Booking_Api.Contracts;
 using Booking_Api.DTOs.Bookings;
 using Booking_Api.Models;
+using Booking_Api.Utilities.Handler;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Booking_Api.Controllers
 {
@@ -23,11 +25,16 @@ namespace Booking_Api.Controllers
             var bookings = _bookingRepository.GetAll();
             if (!bookings.Any())
             {
-                return NotFound("Data Not Found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
             var data = bookings.Select(x => (BookingDto)x);
 
-            return Ok(data);
+            return Ok(new ResponseOKHandler<IEnumerable<BookingDto>>(data));
         }
 
         // Get: api/Booking/guid
@@ -37,58 +44,103 @@ namespace Booking_Api.Controllers
             var booking = _bookingRepository.GetById(guid);
             if (booking is null)
             {
-                return NotFound("Booking Not found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
-            return Ok((BookingDto)booking);
+            return Ok(new ResponseOKHandler<BookingDto>((BookingDto)booking));
         }
 
         // Post: api/Booking
         [HttpPost]
         public IActionResult Create(CreateBookingDto createBookingDto)
         {
-            var createdBooking = _bookingRepository.Create(createBookingDto);
-            if (createdBooking is null)
+            try
             {
-                return BadRequest("Not Created Booking. Try Again!");
+                var createdBooking = _bookingRepository.Create(createBookingDto);
+                
+                return Ok(new ResponseOKHandler<BookingDto>((BookingDto)createdBooking));
             }
-            return Ok((BookingDto)createdBooking);
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         // Put: api/Booking
         [HttpPut]
         public IActionResult Update(BookingDto bookingDto)
         {
-            var booking = _bookingRepository.GetById(bookingDto.Guid);
-            if (booking is null)
+            try
             {
-                return NotFound("Id Not Found");
-            }
-            Booking toUpdate = bookingDto;
-            toUpdate.CreatedDate = booking.CreatedDate;
+                var booking = _bookingRepository.GetById(bookingDto.Guid);
+                if (booking is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                Booking toUpdate = bookingDto;
+                toUpdate.CreatedDate = booking.CreatedDate;
 
-            var updatedBooking = _bookingRepository.Update(booking);
-            if (!updatedBooking)
-            {
-                return BadRequest("Not Updated Booking. Try Again!");
+                 _bookingRepository.Update(booking);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been updated successfully"));
             }
-            return Ok("Data has been updated successfully");
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         // Delete: api/Booking
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var booking = _bookingRepository.GetById(guid);
-            if (booking is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var booking = _bookingRepository.GetById(guid);
+                if (booking is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                _bookingRepository.Delete(booking);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been Deleted successfully"));
             }
-            var deletedBooking = _bookingRepository.Delete(booking);
-            if (!deletedBooking)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Not Deleted Booking. Try Again!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-            return Ok(deletedBooking);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Booking_Api.Contracts;
 using Booking_Api.DTOs.Educations;
 using Booking_Api.Models;
+using Booking_Api.Utilities.Handler;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Booking_Api.Controllers
 {
@@ -24,11 +26,16 @@ namespace Booking_Api.Controllers
             var educations = _educationRepository.GetAll();
             if (!educations.Any())
             {
-                return NotFound("Data Not Found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
             var data = educations.Select(x => (EducationDto)x);
 
-            return Ok(data);
+            return Ok(new ResponseOKHandler<IEnumerable<EducationDto>>(data));
         }
 
         // Get: api/Education/guid
@@ -38,58 +45,103 @@ namespace Booking_Api.Controllers
             var education = _educationRepository.GetById(guid);
             if (education is null)
             {
-                return NotFound("Education Not found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
-            return Ok((EducationDto)education);
+            return Ok(new ResponseOKHandler<EducationDto>((EducationDto)education));
         }
 
         // Post: api/Education
         [HttpPost]
         public IActionResult Create(CreateEducationDto createEducationDto)
         {
-            var createdEducation = _educationRepository.Create(createEducationDto);
-            if (createdEducation is null)
+            try
             {
-                return BadRequest("Not Created Education. Try Again!");
+                var createdEducation = _educationRepository.Create(createEducationDto);
+               
+                return Ok(new ResponseOKHandler<EducationDto>((EducationDto)createdEducation));
             }
-            return Ok((EducationDto)createdEducation);
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         // Put: api/Education
         [HttpPut]
         public IActionResult Update(EducationDto educationDto)
         {
-            var education = _educationRepository.GetById(educationDto.Guid);
-            if (education is null)
+            try
             {
-                return NotFound("Id Not Found");
-            }
-            Education toUpdate = educationDto;
-            toUpdate.CreatedDate = education.CreatedDate;
+                var education = _educationRepository.GetById(educationDto.Guid);
+                if (education is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                Education toUpdate = educationDto;
+                toUpdate.CreatedDate = education.CreatedDate;
 
-            var updatedEducation = _educationRepository.Update(education);
-            if (!updatedEducation)
-            {
-                return BadRequest("Not Updated Education. Try Again!");
+                _educationRepository.Update(education);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been updated successfully"));
             }
-            return Ok(updatedEducation);
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         // Delete: api/Education
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var education = _educationRepository.GetById(guid);
-            if (education is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var education = _educationRepository.GetById(guid);
+                if (education is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                _educationRepository.Delete(education);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been Deleted successfully"));
             }
-            var deletedEducation = _educationRepository.Delete(education);
-            if (!deletedEducation)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Not Deleted Education. Try Again!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-            return Ok(deletedEducation);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Booking_Api.Contracts;
 using Booking_Api.DTOs.Rooms;
 using Booking_Api.Models;
+using Booking_Api.Utilities.Handler;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Booking_Api.Controllers
 {
@@ -23,11 +25,16 @@ namespace Booking_Api.Controllers
             var rooms = _roomRepository.GetAll();
             if (!rooms.Any())
             {
-                return NotFound("Data Not Found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
             var data = rooms.Select(x => (RoomDto)x);
 
-            return Ok(data);
+            return Ok(new ResponseOKHandler<IEnumerable<RoomDto>>(data));
         }
 
         // GET: api/Room/guid
@@ -37,59 +44,104 @@ namespace Booking_Api.Controllers
             var room = _roomRepository.GetById(guid);
             if (room is null)
             {
-                return NotFound("Room Not found");
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
             }
-            return Ok((RoomDto)room);
+            return Ok(new ResponseOKHandler<RoomDto>((RoomDto)room));
         }
 
         // POST: api/Room
         [HttpPost]
         public IActionResult Create(CreateRoomDto createRoomDto)
         {
-            var createdRoom = _roomRepository.Create(createRoomDto);
-            if (createdRoom is null)
+            try
             {
-                return BadRequest("Not Created Room. Try Again!");
+                var createdRoom = _roomRepository.Create(createRoomDto);
+                
+                return Ok(new ResponseOKHandler<RoomDto>((RoomDto)createdRoom));
             }
-            return Ok((RoomDto)createdRoom);
+            catch (ExceptionHandler ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
+            }
         }
 
         // PUT: api/Room
         [HttpPut]
         public IActionResult Update(RoomDto roomDto)
         {
-            var room = _roomRepository.GetById(roomDto.Guid);
-            if (room is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var room = _roomRepository.GetById(roomDto.Guid);
+                if (room is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+
+                Room toUpdate = roomDto;
+                toUpdate.CreatedDate = room.CreatedDate;
+
+                _roomRepository.Update(room);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been updated successfully"));
             }
-
-            Room toUpdate = roomDto;
-            toUpdate.CreatedDate = room.CreatedDate;
-
-            var updatedRoom = _roomRepository.Update(room);
-            if (!updatedRoom)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Not Updated Room. Try Again!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-            return Ok("Data has been updated successfully");
         }
 
         // DELETE: api/Room
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var room = _roomRepository.GetById(guid);
-            if (room is null)
+            try
             {
-                return NotFound("Id Not Found");
+                var room = _roomRepository.GetById(guid);
+                if (room is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                _roomRepository.Delete(room);
+                
+                return Ok(new ResponseOKHandler<string>("Data has been Deleted successfully"));
             }
-            var deletedRoom = _roomRepository.Delete(room);
-            if (!deletedRoom)
+            catch (ExceptionHandler ex)
             {
-                return BadRequest("Not Deleted Room. Try Again!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to create data",
+                    Error = ex.Message
+                });
             }
-            return Ok(deletedRoom);
         }
     }
 }
