@@ -60,8 +60,12 @@ namespace Booking_Api.Controllers
         [HttpPost]
         public IActionResult Create(CreateEmployeeDto createEmployeeDto)
         {
-            try {
+            try
+            {
+                // Employe toCreate = createEmployeeDto;
+                // toCreate.Nik = GenerateHandler.Nik(_employeRepository.GetLastNik());
                 var createdEmploye = _employeRepository.Create(createEmployeeDto);
+
                 return Ok(new ResponseOKHandler<EmployeeDto>((EmployeeDto)createdEmploye));
             }
             catch (ExceptionHandler ex)
@@ -94,11 +98,13 @@ namespace Booking_Api.Controllers
                 }
 
                 Employe toUpdate = employeeDto;
+                // toUpdate.Nik = employe.Nik;
                 toUpdate.CreatedDate = employe.CreatedDate;
                 _employeRepository.Update(employe);
                 return Ok(new ResponseOKHandler<string>("Data has been updated successfully"));
             }
-            catch (ExceptionHandler ex) {
+            catch (ExceptionHandler ex)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
                 {
                     Code = StatusCodes.Status500InternalServerError,

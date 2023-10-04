@@ -20,12 +20,10 @@ namespace Booking_Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Employe>().HasIndex(e => new
-            {
-                e.Nik,
-                e.Email,
-                e.PhoneNumber
-            }).IsUnique();
+            modelBuilder.Entity<Employe>().HasIndex(e => new {e.Nik}).IsUnique();
+            modelBuilder.Entity<Employe>().HasIndex(e => new {e.Email}).IsUnique();
+            modelBuilder.Entity<Employe>().HasIndex(e => new {e.PhoneNumber}).IsUnique();
+
 
             // University - Educations Relationship (One to Many)
             modelBuilder.Entity<Education>()

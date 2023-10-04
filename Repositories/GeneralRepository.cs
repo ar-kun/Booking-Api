@@ -6,7 +6,7 @@ namespace Booking_Api.Repositories
     public class GeneralRepository<TEntity> : IGeneralRepository<TEntity> where TEntity : class
     {
 
-        private readonly BookingManagementDbContext _context;
+        protected readonly BookingManagementDbContext _context;
 
         protected GeneralRepository(BookingManagementDbContext context)
         {
