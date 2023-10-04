@@ -1,4 +1,5 @@
 ﻿using Booking_Api.Contracts;
+using Booking_Api.DTOs.Universities;
 using Booking_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +25,9 @@ namespace Booking_Api.Controllers
                 return NotFound("Data Not Found");
             }
 
-            return Ok(universities);
+            var data = universities.Select(x => (UniversityDto)x);
+
+            return Ok(data);
         }
 
         [HttpGet("{guid}")]
@@ -35,35 +38,46 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("University Not found");
             }
-            return Ok(university);
+            return Ok((UniversityDto)university);
         }
 
         [HttpPost]
-        public IActionResult Create(University university)
+        public IActionResult Create(CreateUniversityDto createUniversityDto)
         {
-            var createdUniversity = _universityRepository.Create(university);
+            var createdUniversity = _universityRepository.Create(createUniversityDto);
             if (createdUniversity is null)
             {
                 return BadRequest("Not Created University. Try Again!");
             }
-            return Ok(createdUniversity);
+            return Ok((UniversityDto)createdUniversity);
         }
 
         [HttpPut]
-        public IActionResult Update(University university)
+        public IActionResult Update(UniversityDto universityDto)
         {
+            var university = _universityRepository.GetById(universityDto.Guid);
+            if (university is null)
+            {
+                return NotFound("Id Not Found");
+            }
+
+            University toUpdate = universityDto;
+            toUpdate.CreatedDate = university.CreatedDate;
+
             var updatedUniversity = _universityRepository.Update(university);
             if (!updatedUniversity)
             {
                 return BadRequest("Not Updated University. Try Again!");
             }
-            return Ok(updatedUniversity);
+            return Ok("Data has been updated successfully");
         }
 
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var university = new University() { Guid = guid };
+           
+            var university = _universityRepository.GetById(guid);
+
             var deletedUniversity = _universityRepository.Delete(university);
             if (!deletedUniversity)
             {

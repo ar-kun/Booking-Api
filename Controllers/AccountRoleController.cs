@@ -1,4 +1,5 @@
 ﻿using Booking_Api.Contracts;
+using Booking_Api.DTOs.AccountRoles;
 using Booking_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +25,9 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("Data Not Found");
             }
+            var data = accountRoles.Select(x => (AccountRoleDto)x);
 
-            return Ok(accountRoles);
+            return Ok(data);
         }
 
         // Get: api/AccountRole/guid
@@ -37,38 +39,50 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("AccountRole Not found");
             }
-            return Ok(accountRole);
+            return Ok((AccountRoleDto)accountRole);
         }
 
         // Post: api/AccountRole
         [HttpPost]
-        public IActionResult Create(AccountRole accountRole)
+        public IActionResult Create(CreateAccountRoleDto createAccountRoleDto)
         {
-            var createdAccountRole = _accountRoleRepository.Create(accountRole);
+            var createdAccountRole = _accountRoleRepository.Create(createAccountRoleDto);
             if (createdAccountRole is null)
             {
                 return BadRequest("Not Created AccountRole. Try Again!");
             }
-            return Ok(createdAccountRole);
+            return Ok((AccountRoleDto)createdAccountRole);
         }
 
         // Put: api/AccountRole
         [HttpPut]
-        public IActionResult Update(AccountRole accountRole)
+        public IActionResult Update(AccountRoleDto accountRoleDto)
         {
+            var accountRole = _accountRoleRepository.GetById(accountRoleDto.Guid);
+            if (accountRole is null)
+            {
+                return NotFound("Id Not Found");
+            }
+            AccountRole toUpdate = accountRoleDto;
+            toUpdate.CreatedDate = accountRole.CreatedDate;
+
             var updatedAccountRole = _accountRoleRepository.Update(accountRole);
             if (!updatedAccountRole)
             {
                 return BadRequest("Not Updated AccountRole. Try Again!");
             }
-            return Ok(updatedAccountRole);
+            return Ok("Data has been updated successfully");
         }
 
         // Delete: api/AccountRole
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var accountRole = new AccountRole() { Guid = guid };
+            var accountRole = _accountRoleRepository.GetById(guid);
+            if (accountRole is null)
+            {
+                return NotFound("Id Not Found");
+            }
             var deletedAccountRole = _accountRoleRepository.Delete(accountRole);
             if (!deletedAccountRole)
             {

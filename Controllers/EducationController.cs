@@ -1,4 +1,5 @@
 ﻿using Booking_Api.Contracts;
+using Booking_Api.DTOs.Educations;
 using Booking_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,8 +26,9 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("Data Not Found");
             }
+            var data = educations.Select(x => (EducationDto)x);
 
-            return Ok(educations);
+            return Ok(data);
         }
 
         // Get: api/Education/guid
@@ -38,25 +40,33 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("Education Not found");
             }
-            return Ok(education);
+            return Ok((EducationDto)education);
         }
 
         // Post: api/Education
         [HttpPost]
-        public IActionResult Create(Education education)
+        public IActionResult Create(CreateEducationDto createEducationDto)
         {
-            var createdEducation = _educationRepository.Create(education);
+            var createdEducation = _educationRepository.Create(createEducationDto);
             if (createdEducation is null)
             {
                 return BadRequest("Not Created Education. Try Again!");
             }
-            return Ok(createdEducation);
+            return Ok((EducationDto)createdEducation);
         }
 
         // Put: api/Education
         [HttpPut]
-        public IActionResult Update(Education education)
+        public IActionResult Update(EducationDto educationDto)
         {
+            var education = _educationRepository.GetById(educationDto.Guid);
+            if (education is null)
+            {
+                return NotFound("Id Not Found");
+            }
+            Education toUpdate = educationDto;
+            toUpdate.CreatedDate = education.CreatedDate;
+
             var updatedEducation = _educationRepository.Update(education);
             if (!updatedEducation)
             {
@@ -69,7 +79,11 @@ namespace Booking_Api.Controllers
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var education = new Education() { Guid = guid };
+            var education = _educationRepository.GetById(guid);
+            if (education is null)
+            {
+                return NotFound("Id Not Found");
+            }
             var deletedEducation = _educationRepository.Delete(education);
             if (!deletedEducation)
             {

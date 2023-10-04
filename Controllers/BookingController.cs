@@ -1,4 +1,5 @@
 ﻿using Booking_Api.Contracts;
+using Booking_Api.DTOs.Bookings;
 using Booking_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +25,9 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("Data Not Found");
             }
+            var data = bookings.Select(x => (BookingDto)x);
 
-            return Ok(bookings);
+            return Ok(data);
         }
 
         // Get: api/Booking/guid
@@ -37,38 +39,50 @@ namespace Booking_Api.Controllers
             {
                 return NotFound("Booking Not found");
             }
-            return Ok(booking);
+            return Ok((BookingDto)booking);
         }
 
         // Post: api/Booking
         [HttpPost]
-        public IActionResult Create(Booking booking)
+        public IActionResult Create(CreateBookingDto createBookingDto)
         {
-            var createdBooking = _bookingRepository.Create(booking);
+            var createdBooking = _bookingRepository.Create(createBookingDto);
             if (createdBooking is null)
             {
                 return BadRequest("Not Created Booking. Try Again!");
             }
-            return Ok(createdBooking);
+            return Ok((BookingDto)createdBooking);
         }
 
         // Put: api/Booking
         [HttpPut]
-        public IActionResult Update(Booking booking)
+        public IActionResult Update(BookingDto bookingDto)
         {
+            var booking = _bookingRepository.GetById(bookingDto.Guid);
+            if (booking is null)
+            {
+                return NotFound("Id Not Found");
+            }
+            Booking toUpdate = bookingDto;
+            toUpdate.CreatedDate = booking.CreatedDate;
+
             var updatedBooking = _bookingRepository.Update(booking);
             if (!updatedBooking)
             {
                 return BadRequest("Not Updated Booking. Try Again!");
             }
-            return Ok(updatedBooking);
+            return Ok("Data has been updated successfully");
         }
 
         // Delete: api/Booking
         [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
-            var booking = new Booking() { Guid = guid };
+            var booking = _bookingRepository.GetById(guid);
+            if (booking is null)
+            {
+                return NotFound("Id Not Found");
+            }
             var deletedBooking = _bookingRepository.Delete(booking);
             if (!deletedBooking)
             {
