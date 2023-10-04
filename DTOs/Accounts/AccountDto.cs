@@ -10,9 +10,9 @@ namespace Booking_Api.DTOs.Accounts
         public bool IsUsed { get; set; }
         public DateTime ExpiredTime { get; set; }
 
-        public static explicit operator AccountDto(Account account) // Operator explicit untuk mengkonversi Account menjadi AccountDto.
+        public static explicit operator AccountDto(Account account)
         {
-            return new AccountDto // Mengembalikan object AccountDto dengan data dari property Account.
+            return new AccountDto
             {
                 Guid = account.Guid,
                 Password = account.Password,
@@ -22,9 +22,9 @@ namespace Booking_Api.DTOs.Accounts
             };
         }
 
-        public static implicit operator Account(AccountDto accountDto) // Operator implicit untuk mengkonversi AccountDto menjadi Account.
+        public static implicit operator Account(AccountDto accountDto)
         {
-            return new Account // Mengembalikan object Account dengan data dari property AccountDto.
+            return new Account
             {
                 Guid = accountDto.Guid,
                 Password = accountDto.Password,
