@@ -1,7 +1,6 @@
 ﻿using Booking_Api.Contracts;
 using Booking_Api.DTOs.Employees;
 using Booking_Api.Models;
-using Booking_Api.Repositories;
 using Booking_Api.Utilities.Handler;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,11 +12,57 @@ namespace Booking_Api.Controllers
     public class EmployeController : ControllerBase
     {
         private readonly IEmployeRepository _employeRepository;
+        private readonly IEducationRepository _educationRepository;
+        private readonly IUniversityRepository _universityRepository;
+        private readonly IAccountRepository _accountRepository;
 
-        public EmployeController(IEmployeRepository employeRepository)
+        public EmployeController(IEmployeRepository employeRepository, IEducationRepository educationRepository, IUniversityRepository universityRepository, IAccountRepository accountRepository)
         {
             _employeRepository = employeRepository;
+            _educationRepository = educationRepository;
+            _universityRepository = universityRepository;
+            _accountRepository = accountRepository;
         }
+
+        [HttpGet("details")]
+        public IActionResult GetDetails()
+        {
+            var employees = _employeRepository.GetAll();
+            var educations = _educationRepository.GetAll();
+            var universities = _universityRepository.GetAll();
+
+            if (!(employees.Any() && educations.Any() && universities.Any()))
+            {
+                return NotFound(new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data Not Found"
+                });
+            }
+
+            var employeeDetails = from emp in employees
+                                  join edu in educations on emp.Guid equals edu.Guid
+                                  join unv in universities on edu.UniversityGuid equals unv.Guid
+                                  select new EmployeDetailDto
+                                  {
+                                      Guid = emp.Guid,
+                                      Nik = emp.Nik,
+                                      FullName = string.Concat(emp.FirstName, " ", emp.LastName),
+                                      BirthDate = emp.BirthDate,
+                                      Gender = emp.Gender.ToString(),
+                                      HiringDate = emp.HiringDate,
+                                      Email = emp.Email,
+                                      PhoneNumber = emp.PhoneNumber,
+                                      Major = edu.Major,
+                                      Degree = edu.Degree,
+                                      Gpa = edu.Gpa,
+                                      University = unv.Name
+                                  };
+
+            return Ok(new ResponseOKHandler<IEnumerable<EmployeDetailDto>>(employeeDetails));
+        }
+
 
         // Get: api/Employe
         [HttpGet]

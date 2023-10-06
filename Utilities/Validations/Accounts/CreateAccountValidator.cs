@@ -16,23 +16,6 @@ namespace Booking_Api.Utilities.Validations.Accounts
             .Matches("[0-9]").WithMessage("Password must contain at least 1 number")
             .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least 1 special character");
 
-            RuleFor(e => e.Otp)
-            .NotEmpty().WithMessage("OTP is required")
-            .Must(BeValidOtp).WithMessage("OTP must be 6 digits");
-
-            RuleFor(e => e.ExpiredTime)
-            .NotEmpty().WithMessage("Expired time is required")
-            .Must(BeValidStartDate).WithMessage("Expired time must be greater than or equal to current time");
-        }
-
-        private bool BeValidOtp(int otp)
-        {
-            return otp.ToString().Length == 6;
-        }
-
-        private bool BeValidStartDate(DateTime startDate)
-        {
-            return startDate.Date >= DateTime.Now.Date;
         }
     }
 }

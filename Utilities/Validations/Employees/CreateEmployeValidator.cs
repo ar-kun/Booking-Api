@@ -21,7 +21,7 @@ namespace Booking_Api.Utilities.Validations.Employees
             .GreaterThanOrEqualTo(DateTime.Now.AddYears(-18)).WithMessage("Birth Date must be greater than 18 years old");
 
             RuleFor(e => e.Gender)
-            .NotEmpty().WithMessage("Genre is required")
+            .NotNull().WithMessage("Genre is required")
             .IsInEnum().WithMessage("Gender must be Male or Female");
 
             RuleFor(e => e.HiringDate)

@@ -13,5 +13,26 @@
 
         //     return generateNik.ToString();
         // }
+
+        public int Otp()
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(100000, 999999);
+            return randomNumber;
+        }
+
+        public DateTime ExpireTime()
+        {
+            DateTime now = DateTime.Now;
+            DateTime expireTime = now.AddMinutes(5);
+            return expireTime;
+        }
+
+        public int GenerateRandomNumber()
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(100000, 999999);
+            return randomNumber;
+        }
     }
 }
