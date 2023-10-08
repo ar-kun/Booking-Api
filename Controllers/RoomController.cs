@@ -1,7 +1,9 @@
 ﻿using Booking_Api.Contracts;
 using Booking_Api.DTOs.Rooms;
 using Booking_Api.Models;
+using Booking_Api.Repositories;
 using Booking_Api.Utilities.Handler;
+using Booking_Api.Utilities.Validations.Rooms;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -12,12 +14,59 @@ namespace Booking_Api.Controllers
     public class RoomController : ControllerBase
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly IEmployeRepository _employeRepository;
 
-        public RoomController(IRoomRepository roomRepository)
+        public RoomController(IRoomRepository roomRepository, IBookingRepository bookingRepository, IEmployeRepository employeRepository)
         {
             _roomRepository = roomRepository;
+            _bookingRepository = bookingRepository;
+            _employeRepository = employeRepository;
         }
 
+        //Room used
+        [HttpGet("used")]
+        public IActionResult GetUsedRooms()
+        {
+            try {
+                var rooms = _roomRepository.GetAll();
+                var bookings = _bookingRepository.GetAll();
+                var employees = _employeRepository.GetAll();
+
+                if (bookings is null && employees is null && rooms is null)
+                {
+                    return NotFound(new ResponseErrorHandler
+                    {
+                        Code = StatusCodes.Status404NotFound,
+                        Status = HttpStatusCode.NotFound.ToString(),
+                        Message = "Data Not Found"
+                    });
+                }
+                var usedRooms = from r in rooms
+                                join b in bookings on r.Guid equals b.RoomGuid
+                                join e in employees on b.EmployeeGuid equals e.Guid
+                                where (b.StartDate <= DateTime.Today) && (b.EndDate > DateTime.Today)
+                                select new UsedRoomDto
+                                {
+                                        BookingGuid = b.Guid,
+                                        RoomName = r.Name,
+                                        Status = b.Status.ToString(),
+                                        Floor = r.Floor,
+                                        BookBy = string.Concat(e.FirstName, " ", e.LastName)
+                                };
+                return Ok(new ResponseOKHandler<IEnumerable<UsedRoomDto>>(usedRooms));
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseErrorHandler
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Failed to get used rooms",
+                    Error = ex.Message
+                });
+            }
+        }
         // GET: api/Room
         [HttpGet]
         public IActionResult GetAll()

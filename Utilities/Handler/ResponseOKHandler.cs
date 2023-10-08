@@ -17,11 +17,12 @@ namespace Booking_Api.Utilities.Handler
             Data = data;
         }
 
-        public ResponseOKHandler(string message)
+        public ResponseOKHandler(string message, object data)
         {
             Code = StatusCodes.Status200OK;
             Status = HttpStatusCode.OK.ToString();
             Message = message;
+            Data = (TEntity?)data;
         }
     }
 }

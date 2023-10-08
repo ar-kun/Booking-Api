@@ -2,25 +2,33 @@
 using Booking_Api.Data;
 using Booking_Api.DTOs.Accounts;
 using Booking_Api.Models;
+using Booking_Api.Repositories;
 using Booking_Api.Utilities.Handler;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace Booking_Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
+
     public class AccountController : ControllerBase
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IEmployeRepository _employeRepository;
         private readonly IUniversityRepository _universityRepository;
         private readonly IEducationRepository _educationRepository;
+        private readonly IAccountRoleRepository _accountRoleRepository;
+        private readonly IRoleRepository _roleRepository;
 
         private readonly BookingManagementDbContext _context;
         private readonly IEmailHandler _emailHandler;
+        private readonly ITokenHandler _tokenHandler;
 
-        public AccountController(IAccountRepository accountRepository, IEmployeRepository employeRepository, IUniversityRepository universityRepository, IEducationRepository educationRepository, BookingManagementDbContext context, IEmailHandler emailHandler)
+        public AccountController(IAccountRepository accountRepository, IEmployeRepository employeRepository, IUniversityRepository  universityRepository, IEducationRepository educationRepository, BookingManagementDbContext context, IEmailHandler emailHandler, ITokenHandler tokenHandler, IAccountRoleRepository accountRoleRepository, IRoleRepository roleRepository)
         {
             _accountRepository = accountRepository;
             _employeRepository = employeRepository;
@@ -28,9 +36,13 @@ namespace Booking_Api.Controllers
             _educationRepository = educationRepository;
             _context = context;
             _emailHandler = emailHandler;
+            _tokenHandler = tokenHandler;
+            _accountRoleRepository = accountRoleRepository;
+            _roleRepository = roleRepository;
         }
 
         [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public IActionResult ForgotPassword(string email)
         {
             var employees = _employeRepository.GetAll();
@@ -69,6 +81,7 @@ namespace Booking_Api.Controllers
         }
 
         [HttpPut("change-password")]
+        [AllowAnonymous]
         public IActionResult ChangePassword(ChangePasswordDto changePasswordDto)
         {
             try
@@ -131,10 +144,13 @@ namespace Booking_Api.Controllers
 
         // Login
         [HttpPost("login")]
+        [AllowAnonymous]
         public IActionResult Login(LoginDto loginDto)
         {
             var employees = _employeRepository.GetAll();
+            var employee = employees.FirstOrDefault(e => e.Email == loginDto.Email);
             var account = _accountRepository.GetAll();
+            var acount = _accountRepository.GetById(employee.Guid);
             try
             {
                 var checkEmail = from emp in employees
@@ -163,7 +179,20 @@ namespace Booking_Api.Controllers
                     });
                 }
 
-                return Ok(new ResponseOKHandler<string>("Login Success"));
+                var claims = new List<Claim>();
+                claims.Add(new Claim("Email", loginDto.Email));
+                claims.Add(new Claim("FullName", string.Concat(employee.FirstName + " " + employee.LastName)));
+                var getRoleName = from ar in _accountRoleRepository.GetAll()
+                                  join r in _roleRepository.GetAll() on ar.RoleGuid equals r.Guid
+                                  where ar.AccountGuid == acount.Guid
+                                  select r.Name;
+                foreach (var roleName in getRoleName)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, roleName));
+                }
+                var generateToken = _tokenHandler.Generate(claims);
+
+                return Ok(new ResponseOKHandler<string>("Login Success", new { Token = generateToken }));
             }
             catch (ExceptionHandler ex)
             {
@@ -178,6 +207,7 @@ namespace Booking_Api.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public IActionResult Register(RegisterDto registerDto)
         {
             using (var transaction = _context.Database.BeginTransaction())
